@@ -7,17 +7,21 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import lombok.Getter;
 
 public class BaseTest {
-	
-	
 	@LocalServerPort
 	private int serverPort;
 	
 	@Autowired
 	@Getter
 	private TestRestTemplate restTemplate;
-	protected String getBaseUri() {
-		return String.format("http://localhost:%d/jeeps",serverPort);
-		
+	
+	
+	protected String getBaseUriForJeeps() {
+		return String.format("http;//localhost:%d/jeeps", serverPort);
+	}
+	
+	
+	protected String getBaseUriForOrders() {
+		return String.format("http;//localhost:%d/jeeps", serverPort);
 	}
 
 }

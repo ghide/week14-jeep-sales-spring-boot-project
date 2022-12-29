@@ -20,58 +20,77 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 @Slf4j
 public class GlobalErrorHandler {
-	private enum LogStatus{
-		STACK_TRACe,MESSAGE_ONLY
+	
+	private enum LogStatus {
+		STACK_TRACE, MESSAGE_ONLY
 	}
-	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	public Map<String, Object> handleMethodArgumentTypeMismatchException(
-			MethodArgumentTypeMismatchException e, WebRequest webRequest){
-		return createExceptionMessage(e,HttpStatus.NOT_FOUND, webRequest, 
-				LogStatus.MESSAGE_ONLY);
-	}
+	
+
 	
 	@ExceptionHandler(ConstraintViolationException.class)
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	public Map<String,Object> handleConstraintViolationException(
-		ConstraintViolationException e, WebRequest webRequest){
-		return createExceptionMessage(e,HttpStatus.NOT_FOUND,
-				webRequest,LogStatus.MESSAGE_ONLY);	
+	public Map<String, Object> handleConstraintViolationException(
+			ConstraintViolationException e, WebRequest webRequest){
+		
+		return createExceptionMessage(e, HttpStatus.BAD_REQUEST, webRequest, 
+				LogStatus.MESSAGE_ONLY);
 	}
-	@ExceptionHandler(NoSuchElementException.class)
-	@ResponseStatus(code =HttpStatus.NOT_FOUND)
-	public Map<String, Object>handleNoSuchElementException(
-			NoSuchElementException e, WebRequest webRequest){
-		return createExceptionMessage(e,HttpStatus.NOT_FOUND,
-				webRequest,LogStatus.MESSAGE_ONLY);
+	
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	public Map<String, Object> handleIMethodArgumentTypeMismatchException(
+			MethodArgumentTypeMismatchException e, WebRequest webRequest) {
+			return createExceptionMessage(e, HttpStatus.BAD_REQUEST, webRequest, 
+			LogStatus.MESSAGE_ONLY);
 	}
+	
+	
 	@ExceptionHandler(Exception.class)
-	@ResponseStatus(code= HttpStatus.INTERNAL_SERVER_ERROR)
-	public Map<String,Object> handleException(Exception e, WebRequest webRequest){
-		return createExceptionMessage(e,HttpStatus.INTERNAL_SERVER_ERROR, 
-				webRequest,LogStatus.STACK_TRACe);
+	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+	public Map<String, Object> handleException(Exception e,
+			WebRequest webRequest) {
+		
+		return createExceptionMessage(e, HttpStatus.INTERNAL_SERVER_ERROR, 
+				webRequest, LogStatus.STACK_TRACE);
 	}
+	
+	
+	@ExceptionHandler(NoSuchElementException.class)
+	@ResponseStatus(code = HttpStatus.NOT_FOUND)
+	public Map<String, Object> handleNoSuchElementException(
+			
+			NoSuchElementException e, WebRequest webRequest) {
+		
+		return createExceptionMessage(e, HttpStatus.NOT_FOUND, webRequest, LogStatus.MESSAGE_ONLY);
+		
+	}
+	
 	private Map<String, Object> createExceptionMessage(Exception e,
-			HttpStatus status,WebRequest webRequest,LogStatus logStatus) {
-		Map<String,Object>error =new HashMap<>();
+			HttpStatus status, WebRequest webRequest, LogStatus logStatus) {
+		
+		Map<String, Object> error = new HashMap<>();
+		
 		String timestamp = 
-			ZonedDateTime.now().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+				ZonedDateTime.now().format(DateTimeFormatter.RFC_1123_DATE_TIME);
 		
 		if(webRequest instanceof ServletWebRequest) {
-			error.put("uri",
-					((ServletWebRequest)webRequest).getRequest().getRequestURI());
+			error.put("uri", 
+					((ServletWebRequest) webRequest).getRequest().getRequestURI());
 		}
+		
+		
 		error.put("message", e.toString());
-		error.put("status code",status.value());
-		error.put("timestamp",timestamp);
+		error.put("Status code", status.value());
+		error.put("timestamp", timestamp);
 		error.put("reason", status.getReasonPhrase());
 		
-		if(logStatus == logStatus.MESSAGE_ONLY) {
+		if(logStatus == LogStatus.MESSAGE_ONLY) {
 			log.error("Exception: {}", e.toString());
 		}
 		else {
-			log.error("Exception:",e);
+			log.error("Exception: {}", e );
 		}
 		return error;
 	}
+
 }

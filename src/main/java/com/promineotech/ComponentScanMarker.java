@@ -1,5 +1,5 @@
 package com.promineotech;
 
-public class ComponentScanMarker {
+public interface ComponentScanMarker {
 
 }

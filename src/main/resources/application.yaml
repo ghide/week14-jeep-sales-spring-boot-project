@@ -1,17 +1,14 @@
 
 
 spring:
- datasource:
-   password: jeep
-   username: jeep
-   url: jdbc:mysql://localhost:3306/jeep
-
+  datasource:
+    password: jeep
+    username: jeep
+    url: jdbc:mysql://localhost:3306/jeep
 logging:
   level:
-   root: WARN
-   '[com.promineotech]': debug
-   
-    
+    root: warn
+    '[com.promineotech]': debug
    
     
     
